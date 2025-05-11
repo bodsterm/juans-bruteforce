@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juan's Brute-Force</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Starry Background */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 3em;
+            color: #ff4444;
+            text-shadow: 0 0 10px #ff0000;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .prompt {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            color: #0f0;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #0f0;
+            background: #111;
+            color: #0f0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: #0f0;
+            color: #000;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            color: #0f0;
+            white-space: pre-wrap;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .fake-code {
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            animation: typing 2s steps(30, end);
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    <h1>Juan's Brute-Force</h1>
+    <div class="container">
+        <div class="prompt" id="prompt">What site are you using? (Facebook doesn't work)</div>
+        <input type="text" id="inputBox" placeholder="Enter here..." autocomplete="off">
+        <button id="actionButton" disabled>Enter</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        // Starry Background Animation
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        for (let i = 0; i < 100; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                speed: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+                star.y += star.speed;
+                if (star.y > canvas.height) star.y = 0;
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // Main Logic
+        const inputBox = document.getElementById('inputBox');
+        const actionButton = document.getElementById('actionButton');
+        const prompt = document.getElementById('prompt');
+        const output = document.getElementById('output');
+        let state = 'site';
+        let site = '';
+
+        inputBox.addEventListener('input', () => {
+            actionButton.disabled = inputBox.value.trim() === '';
+        });
+
+        actionButton.addEventListener('click', () => {
+            if (state === 'site') {
+                site = inputBox.value.trim();
+                inputBox.value = '';
+                prompt.textContent = 'Enter username';
+                actionButton.textContent = 'Brute-Force Password';
+                actionButton.disabled = true;
+                state = 'username';
+            } else if (state === 'username') {
+                const username = inputBox.value.trim();
+                inputBox.disabled = true;
+                actionButton.disabled = true;
+                prompt.textContent = 'Brute-Forcing...';
+                output.innerHTML = '<div class="fake-code">Initializing brute-force algorithm...\nConnecting to server...\nBypassing firewall...\nCracking password...</div>';
+
+                setTimeout(() => {
+                    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+                    let password = '';
+                    const length = Math.floor(Math.random() * 15) + 6; // 6 to 20 characters
+                    for (let i = 0; i < length; i++) {
+                        password += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+
+                    output.innerHTML = `Website: ${site}\nUsername: ${username}\nPassword: ${password}\n\nNote: This is a troll site. The password is fake and doesn't work.`;
+                    prompt.textContent = 'Brute-Force Complete!';
+                    inputBox.disabled = false;
+                    actionButton.disabled = false;
+                    actionButton.textContent = 'Try Again';
+                    state = 'reset';
+                }, 5000);
+            } else if (state === 'reset') {
+                inputBox.value = '';
+                output.innerHTML = '';
+                prompt.textContent = 'What site are you using? (Facebook doesn’t work)';
+                actionButton.textContent = 'Enter';
+                actionButton.disabled = true;
+                state = 'site';
+            }
+        });
+    </script>
+</body>
+</html>
